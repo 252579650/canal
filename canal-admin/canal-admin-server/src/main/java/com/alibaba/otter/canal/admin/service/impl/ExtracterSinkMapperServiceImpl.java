@@ -4,18 +4,51 @@ import com.alibaba.otter.canal.admin.common.exception.ServiceException;
 import com.alibaba.otter.canal.admin.model.*;
 import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
 import com.alibaba.otter.canal.admin.vo.ETLModelVO;
+import com.alibaba.otter.canal.admin.vo.QuerySchemaVO;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.zaxxer.hikari.HikariDataSource;
 import io.ebean.Ebean;
 import org.springframework.beans.BeanUtils;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
+
+    public List<Map<String, String>> querySchema(QuerySchemaVO vo) {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setUsername(vo.getUserName());
+        ds.setPassword(vo.getPassword());
+        ds.setJdbcUrl("jdbc:mysql://" + vo.getIp() + ":" + vo.getPort() + "/" + vo.getDbName());
+        ds.setDriverClassName("com.mysql.jdbc.Driver");
+
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        jdbcTemplate.setDataSource(ds);
+
+        List<Map<String, String>> result = Lists.newArrayList();
+
+        String sql = "select COLUMN_NAME, COLUMN_COMMENT from information_schema.COLUMNS where table_schema='" + vo.getDbName() + "' and table_name='" + vo.getTableName() + "'";
+        List rows = jdbcTemplate.queryForList(sql);
+        Iterator it = rows.iterator();
+        while (it.hasNext()) {
+            Map map = (Map) it.next();
+
+            Map<String, String> r = Maps.newHashMap();
+            r.put(map.get("COLUMN_NAME").toString(), map.get("COLUMN_COMMENT").toString());
+            result.add(r);
+        }
+
+        return result;
+    }
+
 
     public void delete(ETLModelVO model) {
         ExtracterTask extracterTask = ExtracterTask.find.query().where().idEq(model.getId()).findOne();
