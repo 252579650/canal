@@ -22,21 +22,21 @@ public class User extends Model {
         /**
          * Construct using the default EbeanServer.
          */
-        public UserFinder(){
+        public UserFinder() {
             super(User.class);
         }
 
     }
 
     @Id
-    private Long   id;
+    private Long id;
     private String username;
     private String password;
     private String roles;
     private String introduction;
     private String avatar;
     private String name;
-    private Date   creationDate;
+    private Date creationDate;
 
     @Transient
     private String oldPassword;

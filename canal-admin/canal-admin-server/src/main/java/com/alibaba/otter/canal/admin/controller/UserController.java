@@ -26,18 +26,18 @@ import java.util.concurrent.TimeUnit;
 public class UserController {
 
     public static final LoadingCache<String, User> loginUsers = Caffeine.newBuilder()
-        .maximumSize(10_000)
-        .expireAfterAccess(30, TimeUnit.MINUTES)
-        .build(key -> null);                                                         // 用户登录信息缓存
+            .maximumSize(10_000)
+            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .build(key -> null);                                                         // 用户登录信息缓存
 
     @Autowired
-    UserService                                    userService;
+    UserService userService;
 
     /**
      * 用户登录
      *
      * @param user 账号密码
-     * @param env 环境变量
+     * @param env  环境变量
      * @return token
      */
     @PostMapping(value = "/login")
@@ -61,7 +61,7 @@ public class UserController {
      * 获取用户信息
      *
      * @param token token
-     * @param env 环境变量
+     * @param env   环境变量
      * @return 用户信息
      */
     @GetMapping(value = "/info")
@@ -80,8 +80,8 @@ public class UserController {
     /**
      * 修改用户信息
      *
-     * @param user 用户信息
-     * @param env 环境变量
+     * @param user               用户信息
+     * @param env                环境变量
      * @param httpServletRequest httpServletRequest
      * @return 是否成功
      */
