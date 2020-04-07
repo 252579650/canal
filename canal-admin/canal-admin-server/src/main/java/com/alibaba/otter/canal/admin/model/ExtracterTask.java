@@ -1,5 +1,6 @@
 package com.alibaba.otter.canal.admin.model;
 
+import io.ebean.Finder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -22,9 +23,22 @@ import java.time.LocalDateTime;
 @Accessors(chain = true)
 @Table(name = "extracter_task")
 @Entity
-public class ExtracterTask extends Model{
+public class ExtracterTask extends Model {
 
     private static final long serialVersionUID = 1L;
+
+    public static final ExtracterTask.ExtracterTaskFinder find = new ExtracterTask.ExtracterTaskFinder();
+
+    public static class ExtracterTaskFinder extends Finder<Long, ExtracterTask> {
+
+        /**
+         * Construct using the default EbeanServer.
+         */
+        public ExtracterTaskFinder() {
+            super(ExtracterTask.class);
+        }
+
+    }
 
     @Id
     private Integer id;
@@ -33,6 +47,8 @@ public class ExtracterTask extends Model{
      * 任务名
      */
     private String name;
+
+    private String description;
 
     /**
      * 起始数据源
@@ -43,6 +59,8 @@ public class ExtracterTask extends Model{
      * 起始表
      */
     private String sourceTable;
+
+
 
     /**
      * 执行结果;0/未开始;1/成功;2/失败;
