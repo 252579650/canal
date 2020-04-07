@@ -1,5 +1,6 @@
 package com.alibaba.otter.canal.admin.model;
 
+import io.ebean.Finder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -27,6 +28,18 @@ import java.time.LocalDateTime;
 public class ExtracterSinkMapper extends Model {
 
     private static final long serialVersionUID = 1L;
+
+    public static final ExtracterSinkMapper.ExtracterSinkMapperFinder find = new ExtracterSinkMapper.ExtracterSinkMapperFinder();
+
+    public static class ExtracterSinkMapperFinder extends Finder<Integer, ExtracterSinkMapper> {
+
+        /**
+         * Construct using the default EbeanServer.
+         */
+        public ExtracterSinkMapperFinder() {
+            super(ExtracterSinkMapper.class);
+        }
+    }
 
     @Id
     private Integer id;

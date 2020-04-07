@@ -12,9 +12,31 @@ import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
+
+    public void delete(ETLModelVO model) {
+        ExtracterTask extracterTask = ExtracterTask.find.query().where().idEq(model.getId()).findOne();
+        if (extracterTask == null) {
+            throw new ServiceException(model.getId() + "未查询到相关配置");
+        }
+        //删除主任务
+        extracterTask.delete();
+
+        List<ExtracterTaskSink> extracterTaskSinks = ExtracterTaskSink.find.query().where().eq("task_id", model.getId()).findList();
+        if (!CollectionUtils.isEmpty(extracterTaskSinks)) {
+            //删除关联信息
+            ExtracterTaskSink.find.query().where().eq("task_id", model.getId()).delete();
+            //删除映射信息
+            List<ExtracterSinkDestination> destinations = ExtracterSinkDestination.find.query().where().in("sink_id", extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toSet())).findList();
+            if (!CollectionUtils.isEmpty(destinations)) {
+                ExtracterSinkDestination.find.query().where().in("sink_id", extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toSet())).delete();
+                ExtracterSinkMapper.find.query().where().in("destination_id", destinations.stream().map(ExtracterSinkDestination::getId).collect(Collectors.toSet())).delete();
+            }
+        }
+    }
 
     public void init(ETLModelVO model) {
         try {
