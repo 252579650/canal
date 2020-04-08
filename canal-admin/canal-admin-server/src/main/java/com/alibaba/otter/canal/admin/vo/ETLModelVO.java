@@ -43,8 +43,8 @@ public class ETLModelVO implements Serializable {
         @ApiModelProperty("端口")
         private String port;
 
-        @ApiModelProperty("目标源类型")
-        private SinkOriginEnum sinkOriginEnum;
+        @ApiModelProperty("目标源;0/mysql;1/kafka;2/websocket;3/hbase")
+        private String sinkOrigin;
 
         @ApiModelProperty("目标列表")
         private List<DestinationModel> destinationModels = Lists.newArrayList();

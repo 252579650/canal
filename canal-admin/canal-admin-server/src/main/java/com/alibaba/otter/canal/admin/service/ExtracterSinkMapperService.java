@@ -22,4 +22,6 @@ public interface ExtracterSinkMapperService {
     void delete(ETLModelVO model);
 
     void init(ETLModelVO model);
+
+    ETLModelVO query(Long id);
 }

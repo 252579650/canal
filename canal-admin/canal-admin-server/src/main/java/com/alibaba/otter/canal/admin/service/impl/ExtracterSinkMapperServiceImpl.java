@@ -66,7 +66,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         if (!CollectionUtils.isEmpty(extracterTaskSinks)) {
             //删除关联信息
             ExtracterTaskSink.find.query().where().eq("task_id", model.getId()).delete();
-            ExtracterSink.find.query().where().idIn(extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toList()));
+            ExtracterSink.find.query().where().idIn(extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toList())).delete();
             //删除映射信息
             List<ExtracterSinkDestination> destinations = ExtracterSinkDestination.find.query().where().in("sink_id", extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toSet())).findList();
             if (!CollectionUtils.isEmpty(destinations)) {
@@ -74,6 +74,69 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                 ExtracterSinkMapper.find.query().where().in("destination_id", destinations.stream().map(ExtracterSinkDestination::getId).collect(Collectors.toSet())).delete();
             }
         }
+    }
+
+    @Override
+    public ETLModelVO query(Long id) {
+        ExtracterTask extracterTask = ExtracterTask.find.query().where().idEq(id).findOne();
+        if (extracterTask == null) {
+            return null;
+        }
+
+        ETLModelVO vo = new ETLModelVO();
+        vo.setId(extracterTask.getId());
+        vo.setDescription(extracterTask.getDescription());
+        vo.setName(extracterTask.getName());
+        vo.setSourceDbName(extracterTask.getSourceDatabase());
+        vo.setSourceTableName(extracterTask.getSourceTable());
+        vo.setState(extracterTask.getState());
+
+        List<ExtracterTaskSink> extracterTaskSinks = ExtracterTaskSink.find.query().where().eq("task_id", id).findList();
+        if (!CollectionUtils.isEmpty(extracterTaskSinks)) {
+            List<ExtracterSink> extracterSinks = ExtracterSink.find.query().where().idIn(extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toList())).findList();
+            if (!CollectionUtils.isEmpty(extracterSinks)) {
+                List<ETLModelVO.SinkModel> sinkModels = Lists.newArrayList();
+
+                for (ExtracterSink extracterSink : extracterSinks) {
+                    ETLModelVO.SinkModel sinkModel = new ETLModelVO.SinkModel();
+                    BeanUtils.copyProperties(extracterSink, sinkModel);
+
+                    List<ExtracterSinkDestination> extracterSinkDestinations = ExtracterSinkDestination.find.query().where().eq("sink_id", extracterSink.getId()).findList();
+                    if (!CollectionUtils.isEmpty(extracterSinkDestinations)) {
+                        List<ETLModelVO.DestinationModel> destinationModels = Lists.newArrayList();
+
+                        for (ExtracterSinkDestination extracterSinkDestination : extracterSinkDestinations) {
+                            ETLModelVO.DestinationModel destinationModel = new ETLModelVO.DestinationModel();
+                            BeanUtils.copyProperties(extracterSinkDestination, destinationModel);
+
+                            List<ExtracterSinkMapper> extracterSinkMappers = ExtracterSinkMapper.find.query().where().eq("destination_id", extracterSinkDestination.getId()).findList();
+                            if (!CollectionUtils.isEmpty(extracterSinkMappers)) {
+                                List<ETLModelVO.ModelMapper> modelMappers = Lists.newArrayList();
+
+                                for (ExtracterSinkMapper extracterSinkMapper : extracterSinkMappers) {
+                                    ETLModelVO.ModelMapper modelMapper = new ETLModelVO.ModelMapper();
+                                    BeanUtils.copyProperties(extracterSinkMapper, modelMapper);
+                                    modelMappers.add(modelMapper);
+                                }
+
+                                destinationModel.setModelMappers(modelMappers);
+                            }
+
+                            destinationModels.add(destinationModel);
+                        }
+
+                        sinkModel.setDestinationModels(destinationModels);
+                    }
+
+                    sinkModels.add(sinkModel);
+                }
+
+                vo.setSinkModels(sinkModels);
+
+            }
+        }
+
+        return vo;
     }
 
     @Override
@@ -103,7 +166,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                     ExtracterSink extracterSink = new ExtracterSink();
                     extracterSink.setIp(sink.getIp());
                     extracterSink.setPort(sink.getPort());
-                    extracterSink.setSinkOrigin(sink.getSinkOriginEnum().getCode());
+                    extracterSink.setSinkOrigin(sink.getSinkOrigin());
                     extracterSink.setTitle(sink.getTitle());
                     extracterSink.setCreateTime(LocalDateTime.now());
                     extracterSink.setUpdateTime(LocalDateTime.now());
@@ -152,6 +215,5 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             log.error("入库失败", e);
             throw e;
         }
-
     }
 }

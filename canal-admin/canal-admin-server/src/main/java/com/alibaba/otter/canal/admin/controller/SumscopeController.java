@@ -67,6 +67,12 @@ public class SumscopeController {
         return BaseModel.getInstance("success");
     }
 
+    @GetMapping(value = "/getModel/{id}")
+    @ApiOperation(value = "查询任务模型")
+    public BaseModel<ETLModelVO> getModel(@PathVariable Long id) {
+        return BaseModel.getInstance(extracterSinkMapperService.query(id));
+    }
+
     @PostMapping(value = "/insertConsumer")
     @ApiOperation(value = "新增消费者")
     public BaseModel<String> insertConsumer(@RequestBody CanalConsumer canalConsumer) {
