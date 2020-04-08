@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
 
+    @Override
     public List<Map<String, String>> querySchema(QuerySchemaVO vo) {
         HikariDataSource ds = new HikariDataSource();
         ds.setUsername(vo.getUserName());
@@ -51,6 +52,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         return result;
     }
 
+    @Override
     public void delete(ETLModelVO model) {
         ExtracterTask extracterTask = ExtracterTask.find.query().where().idEq(model.getId()).findOne();
         if (extracterTask == null) {
@@ -72,6 +74,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         }
     }
 
+    @Override
     public void init(ETLModelVO model) {
         try {
             ExtracterTask extracterTask = ExtracterTask.find.query().where().eq("source_database", model.getSourceDbName()).and().eq("source_table", model.getSourceTableName()).findOne();

@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 public class ExtracterTaskServiceImpl implements ExtracterTaskService {
 
+    @Override
     public Pager<ExtracterTask> findList(String search, Pager<ExtracterTask> pager) {
         Query<ExtracterTask> query = ExtracterTask.find.query();
 
