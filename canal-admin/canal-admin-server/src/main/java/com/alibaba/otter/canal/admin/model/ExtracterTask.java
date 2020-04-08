@@ -1,6 +1,7 @@
 package com.alibaba.otter.canal.admin.model;
 
 import io.ebean.Finder;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -46,18 +47,22 @@ public class ExtracterTask extends Model {
     /**
      * 任务名
      */
+    @ApiModelProperty("任务名")
     private String name;
 
+    @ApiModelProperty("描述")
     private String description;
 
     /**
      * 起始数据源
      */
+    @ApiModelProperty("起始数据源")
     private String sourceDatabase;
 
     /**
      * 起始表
      */
+    @ApiModelProperty("起始表")
     private String sourceTable;
 
 
@@ -65,16 +70,19 @@ public class ExtracterTask extends Model {
     /**
      * 执行结果;0/未开始;1/成功;2/失败;
      */
+    @ApiModelProperty("执行结果;0/未开始;1/成功;2/失败")
     private String excuteResult;
 
     /**
      * 最后一次执行时间
      */
+    @ApiModelProperty("最后一次执行时间")
     private LocalDateTime excuteTime;
 
     /**
      * 状态;0/未启用;1/启用
      */
+    @ApiModelProperty("状态;0/未启用;1/启用")
     private String state;
 
     /**
