@@ -1,10 +1,15 @@
 package com.alibaba.otter.canal.admin.vo;
 
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class QuerySchemaVO {
+@ApiModel
+public class QuerySchemaVO  implements Serializable {
+
     @ApiModelProperty("ip地址")
     private String ip;
     @ApiModelProperty("端口")

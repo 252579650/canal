@@ -1,6 +1,5 @@
 package com.alibaba.otter.canal.admin.vo;
 
-import com.alibaba.otter.canal.admin.enums.SinkOriginEnum;
 import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
