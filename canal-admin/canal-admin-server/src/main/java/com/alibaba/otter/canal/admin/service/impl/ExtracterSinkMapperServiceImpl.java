@@ -9,6 +9,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.zaxxer.hikari.HikariDataSource;
 import io.ebean.Ebean;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
 
     public List<Map<String, String>> querySchema(QuerySchemaVO vo) {
@@ -48,7 +50,6 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
         return result;
     }
-
 
     public void delete(ETLModelVO model) {
         ExtracterTask extracterTask = ExtracterTask.find.query().where().idEq(model.getId()).findOne();
@@ -128,15 +129,13 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                             }
                         });
                     }
-
                 }
             }
-
-
         } catch (ServiceException se) {
             throw se;
         } catch (Exception e) {
-
+            log.error("入库失败", e);
+            throw e;
         }
 
     }
