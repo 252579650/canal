@@ -1,6 +1,7 @@
 package com.alibaba.otter.canal.admin.model;
 
 import io.ebean.Finder;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
@@ -15,7 +16,7 @@ import java.util.Date;
 @Accessors(chain = true)
 @Table(name = "canal_consumer")
 @Entity
-public class CanalConsumer  extends Model {
+public class CanalConsumer extends Model {
 
 
     public static final CanalConsumer.CanalConsumerFinder find = new CanalConsumer.CanalConsumerFinder();
@@ -36,16 +37,19 @@ public class CanalConsumer  extends Model {
     /**
      * ip
      */
+    @ApiModelProperty("ip地址")
     private String ip;
 
     /**
      * group_id
      */
+    @ApiModelProperty("消费者组")
     private String groupId;
 
     /**
      * name
      */
+    @ApiModelProperty("名称")
     private String name;
 
     /**

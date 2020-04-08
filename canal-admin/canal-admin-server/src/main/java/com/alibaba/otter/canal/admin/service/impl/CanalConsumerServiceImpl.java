@@ -7,6 +7,7 @@ import io.ebean.Query;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,19 +15,20 @@ import java.util.UUID;
 public class CanalConsumerServiceImpl implements CanalConsumerService {
 
     @Override
-    public void insert(CanalConsumer canalConsumer){
+    public void insert(CanalConsumer canalConsumer) {
         //生成groupid
-        canalConsumer.setGroupId(canalConsumer.getIp().hashCode()+ UUID.randomUUID().toString().replaceAll("-",""));
+        canalConsumer.setGroupId(canalConsumer.getIp().hashCode() + UUID.randomUUID().toString().replaceAll("-", ""));
+        canalConsumer.setCreationDate(new Date());
         canalConsumer.save();
     }
 
     @Override
-    public void delete(Long id){
+    public void delete(Long id) {
         CanalConsumer.find.query().where().idEq(id).delete();
     }
 
     @Override
-    public Pager<CanalConsumer> list(String search, Pager<CanalConsumer> pager){
+    public Pager<CanalConsumer> list(String search, Pager<CanalConsumer> pager) {
         Query<CanalConsumer> query = CanalConsumer.find.query();
 
         Query<CanalConsumer> queryCnt = query.copy();

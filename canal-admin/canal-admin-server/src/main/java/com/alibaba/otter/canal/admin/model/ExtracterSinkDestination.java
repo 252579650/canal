@@ -74,11 +74,6 @@ public class ExtracterSinkDestination extends Model {
     private String kafkaTopic;
 
     /**
-     * kafka groupid
-     */
-    private String kafkaGroupId;
-
-    /**
      * ws url
      */
     private String wsUrl;

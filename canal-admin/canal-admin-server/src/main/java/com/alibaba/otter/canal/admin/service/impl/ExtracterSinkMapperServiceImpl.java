@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -65,6 +66,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         if (!CollectionUtils.isEmpty(extracterTaskSinks)) {
             //删除关联信息
             ExtracterTaskSink.find.query().where().eq("task_id", model.getId()).delete();
+            ExtracterSink.find.query().where().idIn(extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toList()));
             //删除映射信息
             List<ExtracterSinkDestination> destinations = ExtracterSinkDestination.find.query().where().in("sink_id", extracterTaskSinks.stream().map(ExtracterTaskSink::getSinkId).collect(Collectors.toSet())).findList();
             if (!CollectionUtils.isEmpty(destinations)) {
@@ -90,9 +92,11 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             extracterTask.setSourceTable(model.getSourceTableName());
             extracterTask.setState(model.getState());
             extracterTask.setDescription(model.getDescription());
+            extracterTask.setCreateTime(LocalDateTime.now());
+            extracterTask.setUpdateTime(LocalDateTime.now());
             extracterTask.save();
 
-            List<ETLModelVO.SinkModel> sinkModels = Lists.newArrayList();
+            List<ETLModelVO.SinkModel> sinkModels = model.getSinkModels();
             if (!CollectionUtils.isEmpty(sinkModels)) {
                 for (ETLModelVO.SinkModel sink : sinkModels) {
                     //保存sink信息
@@ -101,11 +105,15 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                     extracterSink.setPort(sink.getPort());
                     extracterSink.setSinkOrigin(sink.getSinkOriginEnum().getCode());
                     extracterSink.setTitle(sink.getTitle());
+                    extracterSink.setCreateTime(LocalDateTime.now());
+                    extracterSink.setUpdateTime(LocalDateTime.now());
                     extracterSink.save();
                     //保存关联信息
                     ExtracterTaskSink extracterTaskSink = new ExtracterTaskSink();
                     extracterTaskSink.setSinkId(extracterSink.getId());
                     extracterTaskSink.setTaskId(extracterTask.getId());
+                    extracterTaskSink.setCreateTime(LocalDateTime.now());
+                    extracterTaskSink.setUpdateTime(LocalDateTime.now());
                     extracterTaskSink.save();
 
                     List<ETLModelVO.DestinationModel> destinationModels = sink.getDestinationModels();
@@ -115,6 +123,8 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                             ExtracterSinkDestination extracterSinkDestination = new ExtracterSinkDestination();
                             BeanUtils.copyProperties(d, extracterSinkDestination);
                             extracterSinkDestination.setSinkId(extracterSink.getId());
+                            extracterSinkDestination.setCreateTime(LocalDateTime.now());
+                            extracterSinkDestination.setUpdateTime(LocalDateTime.now());
                             extracterSinkDestination.save();
 
                             List<ETLModelVO.ModelMapper> modelMappers = d.getModelMappers();
@@ -125,6 +135,8 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                                     ExtracterSinkMapper extracterSinkMapper = new ExtracterSinkMapper();
                                     BeanUtils.copyProperties(mm, extracterSinkMapper);
                                     extracterSinkMapper.setDestinationId(extracterSinkDestination.getId());
+                                    extracterSinkMapper.setCreateTime(LocalDateTime.now());
+                                    extracterSinkMapper.setUpdateTime(LocalDateTime.now());
                                     list.add(extracterSinkMapper);
                                 });
 
