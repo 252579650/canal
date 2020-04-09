@@ -106,8 +106,11 @@ public class ETLModelVO implements Serializable {
         /**
          * 类型;0/原值;1/表达式
          */
-        @ApiModelProperty("类型;0/原值;1/表达式")
+        @ApiModelProperty("类型;0/原值;1/表达式;2/默认值")
         private String type;
+
+        @ApiModelProperty("默认值")
+        private String defaultValue;
 
         /**
          * 是否推送;0/否;1/是

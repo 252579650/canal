@@ -54,6 +54,7 @@ public class ExtracterSinkMapper extends Model {
      */
     private String fieldName;
 
+    private String defaultValue;
     /**
      * 字段值表达式
      */

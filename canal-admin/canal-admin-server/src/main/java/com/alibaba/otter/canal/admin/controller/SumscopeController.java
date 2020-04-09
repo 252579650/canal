@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/canal/api/")
+@RequestMapping("/jeecg-boot/canal/api/")
 @Api(tags = "数据抽取api")
 public class SumscopeController {
 
