@@ -12,19 +12,19 @@ public class ETLModelVO implements Serializable {
 
     private Integer id;
 
-    @ApiModelProperty("任务名")
+    @ApiModelProperty("模型名称 *")
     private String name;
 
-    @ApiModelProperty("描述")
+    @ApiModelProperty("模型描述")
     private String description;
 
-    @ApiModelProperty("起始数据源")
+    @ApiModelProperty("来源数据库 *")
     private String sourceDbName;
 
-    @ApiModelProperty("起始表")
+    @ApiModelProperty("来源数据表 *")
     private String sourceTableName;
 
-    @ApiModelProperty("状态;0/未启用;1/启用")
+    @ApiModelProperty("状态;0/未启用;1/启用 *")
     private String state;
 
     @ApiModelProperty("目标源列表")
@@ -33,17 +33,23 @@ public class ETLModelVO implements Serializable {
     @Data
     public static class SinkModel {
 
-        @ApiModelProperty("目标源标题")
+        @ApiModelProperty("目标源标题 *")
         private String title;
 
-        @ApiModelProperty("ip地址")
+        @ApiModelProperty("ip地址 *")
         private String ip;
 
-        @ApiModelProperty("端口")
+        @ApiModelProperty("端口 *")
         private String port;
 
-        @ApiModelProperty("目标源;0/mysql;1/kafka;2/websocket;3/hbase")
+        @ApiModelProperty("目标源;0/mysql;1/kafka;2/websocket;3/hbase *")
         private String sinkOrigin;
+
+        @ApiModelProperty("更新方式")
+        private String updateType;
+
+        @ApiModelProperty("优先级别")
+        private String priority;
 
         @ApiModelProperty("目标列表")
         private List<DestinationModel> destinationModels = Lists.newArrayList();
@@ -55,7 +61,7 @@ public class ETLModelVO implements Serializable {
         @ApiModelProperty("数据库名称")
         private String databaseName;
 
-        @ApiModelProperty("过滤条件")
+        @ApiModelProperty("数据范围")
         private String filterCondition;
         /**
          * 数据库表名
@@ -94,19 +100,19 @@ public class ETLModelVO implements Serializable {
     @Data
     public static class ModelMapper {
 
-        @ApiModelProperty("字段名称")
+        @ApiModelProperty("字段名  *")
         private String fieldName;
 
         /**
          * 字段值表达式
          */
-        @ApiModelProperty("字段值表达式")
+        @ApiModelProperty("表达规则")
         private String fieldVauleExp;
 
         /**
          * 类型;0/原值;1/表达式
          */
-        @ApiModelProperty("类型;0/原值;1/表达式;2/默认值")
+        @ApiModelProperty("类型;0/原值;1/表达式;2/默认值  *")
         private String type;
 
         @ApiModelProperty("默认值")
@@ -115,7 +121,7 @@ public class ETLModelVO implements Serializable {
         /**
          * 是否推送;0/否;1/是
          */
-        @ApiModelProperty("是否推送;0/否;1/是")
+        @ApiModelProperty("是否推送;0/否;1/是  *")
         private String pushFlag;
     }
 
