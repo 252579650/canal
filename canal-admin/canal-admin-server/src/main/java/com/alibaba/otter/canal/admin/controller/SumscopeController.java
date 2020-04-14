@@ -38,7 +38,7 @@ public class SumscopeController {
     }
 
     @GetMapping(value = "/querySchema")
-    @ApiOperation(value = "查询表Schema")
+    @ApiOperation(value = "查询表行数据")
     public BaseModel<List<Map<String, String>>> querySchema(@RequestParam("ip") String ip, @RequestParam("port") String port, @RequestParam("password") String password, @RequestParam("userName") String userName, @RequestParam("tableName") String tableName, @RequestParam("dbName") String dbName) {
         QuerySchemaVO vo = new QuerySchemaVO();
         vo.setTableName(tableName);
@@ -48,6 +48,19 @@ public class SumscopeController {
         vo.setPassword(password);
         vo.setIp(ip);
         return BaseModel.getInstance(extracterSinkMapperService.querySchema(vo));
+    }
+
+    @GetMapping(value = "/queryTables")
+    @ApiOperation(value = "查询表数据")
+    public BaseModel<List<String>> queryTables(@RequestParam("ip") String ip, @RequestParam("port") String port, @RequestParam("password") String password, @RequestParam("userName") String userName, @RequestParam("tableName") String tableName, @RequestParam("dbName") String dbName) {
+        QuerySchemaVO vo = new QuerySchemaVO();
+        vo.setTableName(tableName);
+        vo.setDbName(dbName);
+        vo.setUserName(userName);
+        vo.setPort(port);
+        vo.setPassword(password);
+        vo.setIp(ip);
+        return BaseModel.getInstance(extracterSinkMapperService.queryTables(vo));
     }
 
     @PostMapping(value = "/initModel")

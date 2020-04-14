@@ -17,6 +17,8 @@ import java.util.Map;
  */
 public interface ExtracterSinkMapperService {
 
+    List<String> queryTables(QuerySchemaVO vo);
+
     List<Map<String, String>> querySchema(QuerySchemaVO vo);
 
     void delete(ETLModelVO model);

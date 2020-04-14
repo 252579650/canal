@@ -33,24 +33,54 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         ds.setPassword(vo.getPassword());
         ds.setJdbcUrl("jdbc:mysql://" + vo.getIp() + ":" + vo.getPort() + "/" + vo.getDbName());
         ds.setDriverClassName("com.mysql.jdbc.Driver");
+        try {
+            JdbcTemplate jdbcTemplate = new JdbcTemplate();
+            jdbcTemplate.setDataSource(ds);
 
-        JdbcTemplate jdbcTemplate = new JdbcTemplate();
-        jdbcTemplate.setDataSource(ds);
+            List<Map<String, String>> result = Lists.newArrayList();
 
-        List<Map<String, String>> result = Lists.newArrayList();
+            String sql = "select COLUMN_NAME, COLUMN_COMMENT from information_schema.COLUMNS where table_schema='" + vo.getDbName() + "' and table_name='" + vo.getTableName() + "'";
+            List rows = jdbcTemplate.queryForList(sql);
+            Iterator it = rows.iterator();
+            while (it.hasNext()) {
+                Map map = (Map) it.next();
 
-        String sql = "select COLUMN_NAME, COLUMN_COMMENT from information_schema.COLUMNS where table_schema='" + vo.getDbName() + "' and table_name='" + vo.getTableName() + "'";
-        List rows = jdbcTemplate.queryForList(sql);
-        Iterator it = rows.iterator();
-        while (it.hasNext()) {
-            Map map = (Map) it.next();
+                Map<String, String> r = Maps.newHashMap();
+                r.put(map.get("COLUMN_NAME").toString(), map.get("COLUMN_COMMENT").toString());
+                result.add(r);
+            }
 
-            Map<String, String> r = Maps.newHashMap();
-            r.put(map.get("COLUMN_NAME").toString(), map.get("COLUMN_COMMENT").toString());
-            result.add(r);
+            return result;
+        } finally {
+            ds.close();
         }
+    }
 
-        return result;
+    @Override
+    public List<String> queryTables(QuerySchemaVO vo) {
+        HikariDataSource ds = new HikariDataSource();
+        ds.setUsername(vo.getUserName());
+        ds.setPassword(vo.getPassword());
+        ds.setJdbcUrl("jdbc:mysql://" + vo.getIp() + ":" + vo.getPort() + "/" + vo.getDbName());
+        ds.setDriverClassName("com.mysql.jdbc.Driver");
+        try {
+            JdbcTemplate jdbcTemplate = new JdbcTemplate();
+            jdbcTemplate.setDataSource(ds);
+
+            List<String> result = Lists.newArrayList();
+
+            String sql = "select table_name from information_schema.TABLES where table_schema='" + vo.getDbName() + "' and table_name='%" + vo.getTableName() + "%'";
+            List rows = jdbcTemplate.queryForList(sql);
+            Iterator it = rows.iterator();
+            while (it.hasNext()) {
+                Map map = (Map) it.next();
+                result.add(map.get("table_name").toString());
+            }
+
+            return result;
+        } finally {
+            ds.close();
+        }
     }
 
     @Override
