@@ -69,7 +69,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
             List<String> result = Lists.newArrayList();
 
-            String sql = "select table_name from information_schema.TABLES where table_schema='" + vo.getDbName() + "' and table_name='%" + vo.getTableName() + "%'";
+            String sql = "select table_name from information_schema.TABLES where table_schema='" + vo.getDbName() + "' and table_name like '%" + vo.getTableName() + "%'";
             List rows = jdbcTemplate.queryForList(sql);
             Iterator it = rows.iterator();
             while (it.hasNext()) {
