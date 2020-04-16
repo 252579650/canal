@@ -54,34 +54,37 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         HikariDataSource ds1 = new HikariDataSource();
         HikariDataSource ds = new HikariDataSource();
         try {
-            ds.setUsername("root");
-            ds.setPassword("gjkroot");
-            ds.setJdbcUrl("jdbc:mysql:// 192.168.1.222:3306/gjk_sdmp");
-            ds.setDriverClassName("com.mysql.jdbc.Driver");
-            String sql = "select t1.field_name,t1.field_type,t1.field_code,t2.form_table from sdmp_eform_field t1 inner join sdmp_eform t2 on t2.form_code=t1.fid where t2.form_table='" + vo.getTableName() + "'";
 
-            JdbcTemplate jdbcTemplate = new JdbcTemplate();
-            jdbcTemplate.setDataSource(ds);
-            List rows = jdbcTemplate.queryForList(sql);
-            Iterator it = rows.iterator();
+            if (vo.getDbName().equalsIgnoreCase("GJK_EFORM")) {
+                ds.setUsername("root");
+                ds.setPassword("gjkroot");
+                ds.setJdbcUrl("jdbc:mysql://192.168.1.222:3306/gjk_sdmp");
+                ds.setDriverClassName("com.mysql.jdbc.Driver");
+                String sql = "select t1.field_name,t1.field_type,t1.field_code,t2.form_table from sdmp_eform_field t1 inner join sdmp_eform t2 on t2.form_code=t1.fid where t2.form_table='" + vo.getTableName() + "'";
 
-            if (it.hasNext()) {
-                while (it.hasNext()) {
-                    Map map = (Map) it.next();
-                    ExtracterSinkMapper extracterSinkMapper = valueMap.get(map.get("field_code").toString());
+                JdbcTemplate jdbcTemplate = new JdbcTemplate();
+                jdbcTemplate.setDataSource(ds);
+                List rows = jdbcTemplate.queryForList(sql);
+                Iterator it = rows.iterator();
 
-                    TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
-                    tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
-                    tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
-                    tableRowInfoVO.setFiledComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
-                    tableRowInfoVO.setFiledName(map.get("field_code").toString());
-                    tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
-                    tableRowInfoVO.setType(map.get("field_type").toString());
-                    tableRowInfoVO.setTableName(vo.getTableName());
-                    vos.add(tableRowInfoVO);
+                if (it.hasNext()) {
+                    while (it.hasNext()) {
+                        Map map = (Map) it.next();
+                        ExtracterSinkMapper extracterSinkMapper = valueMap.get(map.get("field_code").toString());
+
+                        TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
+                        tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
+                        tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
+                        tableRowInfoVO.setFiledComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
+                        tableRowInfoVO.setFiledName(map.get("field_code").toString());
+                        tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
+                        tableRowInfoVO.setType(map.get("field_type").toString());
+                        tableRowInfoVO.setTableName(vo.getTableName());
+                        vos.add(tableRowInfoVO);
+                    }
+
+                    return vos;
                 }
-
-                return vos;
             }
 
             ds1.setUsername(vo.getUserName());
@@ -92,20 +95,21 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             jdbcTemplate1.setDataSource(ds1);
 
             String sql1 = "select COLUMN_NAME, COLUMN_COMMENT,DATA_TYPE from information_schema.COLUMNS where table_schema='" + vo.getDbName() + "' and table_name='" + vo.getTableName() + "'";
-            List rows1 = jdbcTemplate.queryForList(sql1);
+            List rows1 = jdbcTemplate1.queryForList(sql1);
 
             Iterator it1 = rows1.iterator();
 
             while (it1.hasNext()) {
-                Map map = (Map) it.next();
+                Map map = (Map) it1.next();
                 ExtracterSinkMapper extracterSinkMapper = valueMap.get(map.get("COLUMN_NAME").toString());
+                extracterSinkMapper = extracterSinkMapper != null ? extracterSinkMapper : new ExtracterSinkMapper();
 
                 TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
                 tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
                 tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
                 tableRowInfoVO.setFiledComment(map.get("COLUMN_COMMENT") != null ? map.get("COLUMN_COMMENT").toString() : null);
                 tableRowInfoVO.setFiledName(map.get("COLUMN_NAME").toString());
-                tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
+                tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "0");
                 tableRowInfoVO.setType(this.typeMach(map.get("DATA_TYPE").toString()));
                 tableRowInfoVO.setTableName(vo.getTableName());
                 vos.add(tableRowInfoVO);
