@@ -75,8 +75,8 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                         TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
                         tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
                         tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
-                        tableRowInfoVO.setFiledComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
-                        tableRowInfoVO.setFiledName(map.get("field_code").toString());
+                        tableRowInfoVO.setFieldComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
+                        tableRowInfoVO.setFieldName(map.get("field_code").toString());
                         tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
                         tableRowInfoVO.setType(map.get("field_type").toString());
                         tableRowInfoVO.setTableName(vo.getTableName());
@@ -107,8 +107,8 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                 TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
                 tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
                 tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
-                tableRowInfoVO.setFiledComment(map.get("COLUMN_COMMENT") != null ? map.get("COLUMN_COMMENT").toString() : null);
-                tableRowInfoVO.setFiledName(map.get("COLUMN_NAME").toString());
+                tableRowInfoVO.setFieldComment(map.get("COLUMN_COMMENT") != null ? map.get("COLUMN_COMMENT").toString() : null);
+                tableRowInfoVO.setFieldName(map.get("COLUMN_NAME").toString());
                 tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "0");
                 tableRowInfoVO.setType(this.typeMach(map.get("DATA_TYPE").toString()));
                 tableRowInfoVO.setTableName(vo.getTableName());

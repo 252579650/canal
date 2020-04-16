@@ -7,9 +7,9 @@ import java.io.Serializable;
 @Data
 public class TableRowInfoVO implements Serializable {
 
-    private String filedName;
+    private String fieldName;
 
-    private String filedComment;
+    private String fieldComment;
 
     private String type;
 
