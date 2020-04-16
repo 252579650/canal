@@ -1,10 +1,11 @@
 package com.alibaba.otter.canal.admin.service;
 
+import com.alibaba.otter.canal.admin.model.ExtracterSinkMapper;
 import com.alibaba.otter.canal.admin.vo.ETLModelVO;
 import com.alibaba.otter.canal.admin.vo.QuerySchemaVO;
+import com.alibaba.otter.canal.admin.vo.TableRowInfoVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -17,9 +18,11 @@ import java.util.Map;
  */
 public interface ExtracterSinkMapperService {
 
+    List<ExtracterSinkMapper> queryList(QuerySchemaVO vo);
+
     List<String> queryTables(QuerySchemaVO vo);
 
-    List<Map<String, String>> querySchema(QuerySchemaVO vo);
+    List<TableRowInfoVO> querySchema(QuerySchemaVO vo);
 
     void delete(ETLModelVO model);
 

@@ -9,13 +9,13 @@ import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
 import com.alibaba.otter.canal.admin.service.ExtracterTaskService;
 import com.alibaba.otter.canal.admin.vo.ETLModelVO;
 import com.alibaba.otter.canal.admin.vo.QuerySchemaVO;
+import com.alibaba.otter.canal.admin.vo.TableRowInfoVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/jeecg-boot/canal/api/")
@@ -39,7 +39,7 @@ public class SumscopeController {
 
     @GetMapping(value = "/querySchema")
     @ApiOperation(value = "查询表行数据")
-    public BaseModel<List<Map<String, String>>> querySchema(@RequestParam("ip") String ip, @RequestParam("port") String port, @RequestParam("password") String password, @RequestParam("userName") String userName, @RequestParam("tableName") String tableName, @RequestParam("dbName") String dbName) {
+    public BaseModel<List<TableRowInfoVO>> querySchema(@RequestParam("ip") String ip, @RequestParam("port") String port, @RequestParam("password") String password, @RequestParam("userName") String userName, @RequestParam("tableName") String tableName, @RequestParam("dbName") String dbName) {
         QuerySchemaVO vo = new QuerySchemaVO();
         vo.setTableName(tableName);
         vo.setDbName(dbName);

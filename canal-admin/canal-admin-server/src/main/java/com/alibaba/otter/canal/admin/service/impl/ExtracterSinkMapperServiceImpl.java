@@ -5,6 +5,7 @@ import com.alibaba.otter.canal.admin.model.*;
 import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
 import com.alibaba.otter.canal.admin.vo.ETLModelVO;
 import com.alibaba.otter.canal.admin.vo.QuerySchemaVO;
+import com.alibaba.otter.canal.admin.vo.TableRowInfoVO;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.zaxxer.hikari.HikariDataSource;
@@ -14,7 +15,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Iterator;
@@ -27,34 +30,94 @@ import java.util.stream.Collectors;
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
 
     @Override
-    public List<Map<String, String>> querySchema(QuerySchemaVO vo) {
+    public List<ExtracterSinkMapper> queryList(QuerySchemaVO vo) {
+        ExtracterSink extracterSink = ExtracterSink.find.query().where().eq("ip", vo.getIp()).eq("port", vo.getPort()).eq("sinkOrigin", "0").findOne();
+        if (extracterSink == null) {
+            return Lists.newArrayList();
+        }
+
+        ExtracterSinkDestination extracterSinkDestination = ExtracterSinkDestination.find.query().where().eq("sinkId", extracterSink.getId()).eq("databaseName", vo.getDbName()).eq("tableName", vo.getTableName()).eq("userName", vo.getUserName()).eq("password", vo.getPassword()).findOne();
+        if (extracterSinkDestination == null) {
+            return Lists.newArrayList();
+        }
+
+        return ExtracterSinkMapper.find.query().where().eq("destinationId", extracterSinkDestination.getId()).findList();
+    }
+
+    @Override
+    public List<TableRowInfoVO> querySchema(QuerySchemaVO vo) {
+        List<ExtracterSinkMapper> extracterSinkMappers = this.queryList(vo);
+        Map<String, ExtracterSinkMapper> valueMap = CollectionUtils.isEmpty(extracterSinkMappers) ? Maps.newHashMap() : extracterSinkMappers.stream().collect(Collectors.toMap(ExtracterSinkMapper::getFieldName, g -> g));
+
+        List<TableRowInfoVO> vos = Lists.newArrayList();
+
+        HikariDataSource ds1 = new HikariDataSource();
         HikariDataSource ds = new HikariDataSource();
-        ds.setUsername(vo.getUserName());
-        ds.setPassword(vo.getPassword());
-        ds.setJdbcUrl("jdbc:mysql://" + vo.getIp() + ":" + vo.getPort() + "/" + vo.getDbName());
-        ds.setDriverClassName("com.mysql.jdbc.Driver");
         try {
+            ds.setUsername("root");
+            ds.setPassword("gjkroot");
+            ds.setJdbcUrl("jdbc:mysql:// 192.168.1.222:3306/gjk_sdmp");
+            ds.setDriverClassName("com.mysql.jdbc.Driver");
+            String sql = "select t1.field_name,t1.field_type,t1.field_code,t2.form_table from sdmp_eform_field t1 inner join sdmp_eform t2 on t2.form_code=t1.fid where t2.form_table='" + vo.getTableName() + "'";
+
             JdbcTemplate jdbcTemplate = new JdbcTemplate();
             jdbcTemplate.setDataSource(ds);
-
-            List<Map<String, String>> result = Lists.newArrayList();
-
-            String sql = "select COLUMN_NAME, COLUMN_COMMENT from information_schema.COLUMNS where table_schema='" + vo.getDbName() + "' and table_name='" + vo.getTableName() + "'";
             List rows = jdbcTemplate.queryForList(sql);
             Iterator it = rows.iterator();
-            while (it.hasNext()) {
-                Map map = (Map) it.next();
 
-                Map<String, String> r = Maps.newHashMap();
-                r.put(map.get("COLUMN_NAME").toString(), map.get("COLUMN_COMMENT").toString());
-                result.add(r);
+            if (it.hasNext()) {
+                while (it.hasNext()) {
+                    Map map = (Map) it.next();
+                    ExtracterSinkMapper extracterSinkMapper = valueMap.get(map.get("field_code").toString());
+
+                    TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
+                    tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
+                    tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
+                    tableRowInfoVO.setFiledComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
+                    tableRowInfoVO.setFiledName(map.get("field_code").toString());
+                    tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
+                    tableRowInfoVO.setType(map.get("field_type").toString());
+                    tableRowInfoVO.setTableName(vo.getTableName());
+                    vos.add(tableRowInfoVO);
+                }
+
+                return vos;
             }
 
-            return result;
+            ds1.setUsername(vo.getUserName());
+            ds1.setPassword(vo.getPassword());
+            ds1.setJdbcUrl("jdbc:mysql://" + vo.getIp() + ":" + vo.getPort() + "/" + vo.getDbName());
+            ds1.setDriverClassName("com.mysql.jdbc.Driver");
+            JdbcTemplate jdbcTemplate1 = new JdbcTemplate();
+            jdbcTemplate1.setDataSource(ds1);
+
+            String sql1 = "select COLUMN_NAME, COLUMN_COMMENT,DATA_TYPE from information_schema.COLUMNS where table_schema='" + vo.getDbName() + "' and table_name='" + vo.getTableName() + "'";
+            List rows1 = jdbcTemplate.queryForList(sql1);
+
+            Iterator it1 = rows1.iterator();
+
+            while (it1.hasNext()) {
+                Map map = (Map) it.next();
+                ExtracterSinkMapper extracterSinkMapper = valueMap.get(map.get("COLUMN_NAME").toString());
+
+                TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
+                tableRowInfoVO.setDefaultValue(extracterSinkMapper.getDefaultValue());
+                tableRowInfoVO.setFieldVauleExp(extracterSinkMapper.getFieldVauleExp());
+                tableRowInfoVO.setFiledComment(map.get("COLUMN_COMMENT") != null ? map.get("COLUMN_COMMENT").toString() : null);
+                tableRowInfoVO.setFiledName(map.get("COLUMN_NAME").toString());
+                tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
+                tableRowInfoVO.setType(this.typeMach(map.get("DATA_TYPE").toString()));
+                tableRowInfoVO.setTableName(vo.getTableName());
+                vos.add(tableRowInfoVO);
+            }
+
+            return vos;
         } finally {
             ds.close();
+            ds1.close();
         }
     }
+
 
     @Override
     public List<String> queryTables(QuerySchemaVO vo) {
@@ -82,6 +145,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             ds.close();
         }
     }
+
 
     @Override
     public void delete(ETLModelVO model) {
@@ -244,6 +308,26 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         } catch (Exception e) {
             log.error("入库失败", e);
             throw e;
+        }
+    }
+
+
+    private String typeMach(String type) {
+        type = type.toUpperCase();
+        if (type.startsWith("BIGINT")) {
+            return "Long";
+        } else if (type.startsWith("INT") || type.startsWith("SMALLINT") || type.startsWith("TINYINT")) {
+            return "Integer";
+        } else if (type.startsWith("FLOAT")) {
+            return "FLOAT";
+        } else if (type.startsWith("DOUBLE")) {
+            return "DOUBLE";
+        } else if (type.startsWith("DECIMAL")) {
+            return "BigDECIMAL";
+        } else if (type.startsWith("DATETIME")) {
+            return "Date";
+        } else {
+            return "String";
         }
     }
 }
