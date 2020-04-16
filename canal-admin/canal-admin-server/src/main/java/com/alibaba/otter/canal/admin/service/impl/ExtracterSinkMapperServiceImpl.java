@@ -78,7 +78,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                         tableRowInfoVO.setFieldComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
                         tableRowInfoVO.setFieldName(map.get("field_code").toString());
                         tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "1");
-                        tableRowInfoVO.setType(map.get("field_type").toString());
+                        tableRowInfoVO.setType(extracterSinkMapper.getType() != null ? extracterSinkMapper.getType() : "0");
                         tableRowInfoVO.setTableName(vo.getTableName());
                         vos.add(tableRowInfoVO);
                     }
@@ -110,7 +110,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                 tableRowInfoVO.setFieldComment(map.get("COLUMN_COMMENT") != null ? map.get("COLUMN_COMMENT").toString() : null);
                 tableRowInfoVO.setFieldName(map.get("COLUMN_NAME").toString());
                 tableRowInfoVO.setPushFlag(extracterSinkMapper.getPushFlag() != null ? extracterSinkMapper.getPushFlag() : "0");
-                tableRowInfoVO.setType(this.typeMach(map.get("DATA_TYPE").toString()));
+                tableRowInfoVO.setType(extracterSinkMapper.getType() != null ? extracterSinkMapper.getType() : "0");
                 tableRowInfoVO.setTableName(vo.getTableName());
                 vos.add(tableRowInfoVO);
             }
