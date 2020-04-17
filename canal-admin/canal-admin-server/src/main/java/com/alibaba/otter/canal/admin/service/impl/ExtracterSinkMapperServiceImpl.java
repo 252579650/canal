@@ -18,7 +18,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -319,7 +322,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
                     List<ETLModelVO.DestinationModel> destinationModels = sink.getDestinationModels();
                     if (!CollectionUtils.isEmpty(destinationModels)) {
-                        destinationModels.stream().forEach(d -> {
+                        for (ETLModelVO.DestinationModel d : destinationModels) {
                             //保存Destination信息
                             ExtracterSinkDestination extracterSinkDestination = new ExtracterSinkDestination();
                             BeanUtils.copyProperties(d, extracterSinkDestination);
@@ -343,7 +346,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
                                 Ebean.saveAll(list);
                             }
-                        });
+                        }
                     }
                 }
             }
