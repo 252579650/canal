@@ -13,8 +13,6 @@ import io.ebean.Ebean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,13 +26,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService, InitializingBean {
 
+    private static final String CONF_DIR = "conf";
+
     private Map<String, List<String>> cache = Maps.newHashMap();
 
     @Override
     public void afterPropertiesSet() throws Exception {
         Properties properties = new Properties();
-        Resource resource = new ClassPathResource("db.properties");
-        InputStream is = resource.getInputStream();
+        File configFile = new File(".." + File.separator + CONF_DIR + File.separator + "db.properties");
+        InputStream is = new FileInputStream(configFile);
         try {
             properties.load(new InputStreamReader(is, "UTF-8"));
             Enumeration<Object> keys = properties.keys();
@@ -48,12 +48,11 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         }
     }
 
-    @Override
     public Set<String> querySourceDBNames() {
         return cache.keySet();
     }
 
-    @Override
+
     public List<String> queryTableNames(String key) {
         return cache.get(key);
     }
