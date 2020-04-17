@@ -40,7 +40,7 @@ public class SumscopeController {
 
     @GetMapping(value = "/queryTableNames")
     @ApiOperation(value = "查询来源表集合")
-    public BaseModel<List<String>> queryTableNames(String key) {
+    public BaseModel<List<String>> queryTableNames(@RequestParam("key") String key) {
         return BaseModel.getInstance(extracterSinkMapperService.queryTableNames(key));
     }
 

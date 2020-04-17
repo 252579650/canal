@@ -56,6 +56,33 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         }
     }
 
+    public static void main(String[] args) throws IOException {
+        Properties properties = new Properties();
+        File configFile = new File(".." + File.separator + CONF_DIR + File.separator + "db.properties");
+        if (!configFile.exists()) {
+            URL url = TemplateConfigLoader.class.getClassLoader().getResource("");
+            if (url != null) {
+                configFile = new File(url.getPath() + "db.properties" + File.separator);
+            }
+        }
+        InputStream is = new FileInputStream(configFile);
+        try {
+            properties.load(new InputStreamReader(is, "UTF-8"));
+            Enumeration<Object> keys = properties.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                System.out.println(Arrays.asList(properties.getProperty(key).split(",")));
+            }
+
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            is.close();
+        }
+    }
+
     public Set<String> querySourceDBNames() {
         return cache.keySet();
     }
