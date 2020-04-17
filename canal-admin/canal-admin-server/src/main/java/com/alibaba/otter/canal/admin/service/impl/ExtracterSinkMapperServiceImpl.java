@@ -1,6 +1,5 @@
 package com.alibaba.otter.canal.admin.service.impl;
 
-import com.alibaba.otter.canal.admin.common.TemplateConfigLoader;
 import com.alibaba.otter.canal.admin.common.exception.ServiceException;
 import com.alibaba.otter.canal.admin.model.*;
 import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
@@ -18,11 +17,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,31 +28,50 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService, InitializingBean {
 
-    private static final String CONF_DIR = "conf";
-
     private Map<String, List<String>> cache = Maps.newHashMap();
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        Properties properties = new Properties();
-        File configFile = new File(".." + File.separator + CONF_DIR + File.separator + "db.properties");
-        if (!configFile.exists()) {
-            URL url = TemplateConfigLoader.class.getClassLoader().getResource("");
-            if (url != null) {
-                configFile = new File(url.getPath() + "db.properties" + File.separator);
-            }
+        List<CanalInstanceConfig> canalInstanceConfigs = CanalInstanceConfig.find.query().findList();
+        if (CollectionUtils.isEmpty(canalInstanceConfigs)) {
+            return;
         }
-        InputStream is = new FileInputStream(configFile);
-        try {
-            properties.load(new InputStreamReader(is, "UTF-8"));
-            Enumeration<Object> keys = properties.keys();
-            while (keys.hasMoreElements()) {
-                String key = (String) keys.nextElement();
-                cache.put(key, Arrays.asList(properties.getProperty(key).split(",")));
-            }
 
-        } finally {
-            is.close();
+        for (CanalInstanceConfig config : canalInstanceConfigs) {
+            Properties properties = new Properties();
+            InputStream is = new ByteArrayInputStream(config.getContent().getBytes());
+
+            HikariDataSource ds = new HikariDataSource();
+
+            JdbcTemplate jdbcTemplate = new JdbcTemplate();
+            jdbcTemplate.setDataSource(ds);
+            try {
+                properties.load(new InputStreamReader(is, "UTF-8"));
+
+                Object o = properties.get("canal.instance.filter.regex");
+                if (o != null || !o.toString().startsWith(".*")) {
+                    List<String> tableNames = Lists.newArrayList();
+
+                    String[] array = o.toString().split("\\\\");
+
+                    String dbName = array[0];
+                    ds.setUsername(properties.get("canal.instance.dbUsername").toString());
+                    ds.setPassword(properties.get("canal.instance.dbPassword").toString());
+                    ds.setJdbcUrl("jdbc:mysql://" + properties.get("canal.instance.dbPassword").toString() + "/" + dbName);
+                    ds.setDriverClassName("com.mysql.jdbc.Driver");
+
+                    String sql = "select table_name from information_schema.TABLES where table_schema='" + dbName + "'";
+                    List rows = jdbcTemplate.queryForList(sql);
+                    Iterator it = rows.iterator();
+                    while (it.hasNext()) {
+                        Map map = (Map) it.next();
+                        tableNames.add(map.get("table_name").toString());
+                    }
+                }
+            } finally {
+                is.close();
+                ds.close();
+            }
         }
     }
 
@@ -92,7 +108,6 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         HikariDataSource ds1 = new HikariDataSource();
         HikariDataSource ds = new HikariDataSource();
         try {
-
             if (vo.getDbName().equalsIgnoreCase("GJK_EFORM")) {
                 ds.setUsername("root");
                 ds.setPassword("gjkroot");
