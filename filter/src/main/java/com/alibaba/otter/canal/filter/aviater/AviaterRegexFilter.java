@@ -60,6 +60,8 @@ public class AviaterRegexFilter implements CanalEventFilter<String> {
     }
 
     public boolean filter(String filtered) throws CanalFilterException {
+
+
         if (StringUtils.isEmpty(pattern)) {
             return defaultEmptyValue;
         }

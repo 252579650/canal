@@ -6,6 +6,7 @@ import com.alibaba.otter.canal.admin.vo.QuerySchemaVO;
 import com.alibaba.otter.canal.admin.vo.TableRowInfoVO;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -17,6 +18,10 @@ import java.util.List;
  * @since 2020-04-03
  */
 public interface ExtracterSinkMapperService {
+
+    List<String> queryTableNames(String key);
+
+    Set<String> querySourceDBNames();
 
     List<ExtracterSinkMapper> queryList(QuerySchemaVO vo);
 

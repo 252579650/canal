@@ -12,22 +12,51 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.ebean.Ebean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
-import java.math.BigDecimal;
+import java.io.*;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
+public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService, InitializingBean {
+
+    private Map<String, List<String>> cache = Maps.newHashMap();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        Properties properties = new Properties();
+        Resource resource = new ClassPathResource("db.properties");
+        InputStream is = resource.getInputStream();
+        try {
+            properties.load(new InputStreamReader(is, "UTF-8"));
+            Enumeration<Object> keys = properties.keys();
+            while (keys.hasMoreElements()) {
+                String key = (String) keys.nextElement();
+                cache.put(key, Arrays.asList(properties.getProperty(key).split(",")));
+            }
+
+        } finally {
+            is.close();
+        }
+    }
+
+    @Override
+    public Set<String> querySourceDBNames() {
+        return cache.keySet();
+    }
+
+    @Override
+    public List<String> queryTableNames(String key) {
+        return cache.get(key);
+    }
 
     @Override
     public List<ExtracterSinkMapper> queryList(QuerySchemaVO vo) {
@@ -246,6 +275,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             }
             //保存计划信息
             extracterTask = new ExtracterTask();
+            extracterTask.setId(model.getId());
             extracterTask.setName(model.getName());
             extracterTask.setExcuteResult("0");
             extracterTask.setExcuteTime(LocalDateTime.now());
