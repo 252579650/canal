@@ -1,5 +1,6 @@
 package com.alibaba.otter.canal.admin.service.impl;
 
+import com.alibaba.otter.canal.admin.common.TemplateConfigLoader;
 import com.alibaba.otter.canal.admin.common.exception.ServiceException;
 import com.alibaba.otter.canal.admin.model.*;
 import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.io.*;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -34,6 +36,12 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
     public void afterPropertiesSet() throws Exception {
         Properties properties = new Properties();
         File configFile = new File(".." + File.separator + CONF_DIR + File.separator + "db.properties");
+        if (!configFile.exists()) {
+            URL url = TemplateConfigLoader.class.getClassLoader().getResource("");
+            if (url != null) {
+                configFile = new File(url.getPath() + "db.properties" + File.separator);
+            }
+        }
         InputStream is = new FileInputStream(configFile);
         try {
             properties.load(new InputStreamReader(is, "UTF-8"));
