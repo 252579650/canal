@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/jeecg-boot/canal/api/")
@@ -30,6 +31,18 @@ public class SumscopeController {
 
     @Autowired
     private ExtracterSinkMapperService extracterSinkMapperService;
+
+    @GetMapping(value = "/querySourceDBNames")
+    @ApiOperation(value = "查询来源数据库")
+    public BaseModel<Set<String>> querySourceDBNames() {
+        return BaseModel.getInstance(extracterSinkMapperService.querySourceDBNames());
+    }
+
+    @GetMapping(value = "/queryTableNames")
+    @ApiOperation(value = "查询来源表集合")
+    public BaseModel<List<String>> queryTableNames(String key) {
+        return BaseModel.getInstance(extracterSinkMapperService.queryTableNames(key));
+    }
 
     @GetMapping(value = "/queryTaskList")
     @ApiOperation(value = "查询任务列表")
