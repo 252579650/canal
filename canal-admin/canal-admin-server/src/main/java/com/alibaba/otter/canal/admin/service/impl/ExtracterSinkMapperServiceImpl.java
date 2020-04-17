@@ -67,6 +67,10 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                         Map map = (Map) it.next();
                         tableNames.add(map.get("table_name").toString());
                     }
+
+                    if (CollectionUtils.isEmpty(tableNames)) {
+                        cache.put(dbName, tableNames);
+                    }
                 }
             } finally {
                 is.close();
