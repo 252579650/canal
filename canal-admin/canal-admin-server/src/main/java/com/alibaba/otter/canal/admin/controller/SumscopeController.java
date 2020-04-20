@@ -34,13 +34,13 @@ public class SumscopeController {
 
     @GetMapping(value = "/querySourceDBNames")
     @ApiOperation(value = "查询来源数据库")
-    public BaseModel<Set<String>> querySourceDBNames() {
+    public BaseModel<Set<String>> querySourceDBNames() throws Exception {
         return BaseModel.getInstance(extracterSinkMapperService.querySourceDBNames());
     }
 
     @GetMapping(value = "/queryTableNames")
     @ApiOperation(value = "查询来源表集合")
-    public BaseModel<List<String>> queryTableNames(@RequestParam("key") String key) {
+    public BaseModel<List<String>> queryTableNames(@RequestParam("key") String key) throws Exception {
         return BaseModel.getInstance(extracterSinkMapperService.queryTableNames(key));
     }
 

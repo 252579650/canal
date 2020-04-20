@@ -12,7 +12,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.ebean.Ebean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -26,13 +25,12 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService, InitializingBean {
+public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperService {
 
     private Map<String, List<String>> cache = Maps.newHashMap();
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        List<CanalInstanceConfig> canalInstanceConfigs = CanalInstanceConfig.find.query().findList();
+    public void initCache() throws Exception {
+        List<CanalInstanceConfig> canalInstanceConfigs = CanalInstanceConfig.find.all();
         if (CollectionUtils.isEmpty(canalInstanceConfigs)) {
             return;
         }
@@ -57,7 +55,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                     String dbName = array[0];
                     ds.setUsername(properties.get("canal.instance.dbUsername").toString());
                     ds.setPassword(properties.get("canal.instance.dbPassword").toString());
-                    ds.setJdbcUrl("jdbc:mysql://" + properties.get("canal.instance.dbPassword").toString() + "/" + dbName);
+                    ds.setJdbcUrl("jdbc:mysql://" + properties.get("canal.instance.master.address").toString() + "/" + dbName);
                     ds.setDriverClassName("com.mysql.jdbc.Driver");
 
                     String sql = "select table_name from information_schema.TABLES where table_schema='" + dbName + "'";
@@ -68,7 +66,7 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                         tableNames.add(map.get("table_name").toString());
                     }
 
-                    if (CollectionUtils.isEmpty(tableNames)) {
+                    if (!CollectionUtils.isEmpty(tableNames)) {
                         cache.put(dbName, tableNames);
                     }
                 }
@@ -79,11 +77,19 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         }
     }
 
-    public Set<String> querySourceDBNames() {
+    public Set<String> querySourceDBNames() throws Exception {
+        if (CollectionUtils.isEmpty(cache)) {
+            initCache();
+        }
+
         return cache.keySet();
     }
 
-    public List<String> queryTableNames(String key) {
+    public List<String> queryTableNames(String key) throws Exception {
+        if (CollectionUtils.isEmpty(cache)) {
+            initCache();
+        }
+
         return cache.get(key);
     }
 

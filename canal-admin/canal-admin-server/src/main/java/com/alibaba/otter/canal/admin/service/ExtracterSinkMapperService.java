@@ -19,9 +19,11 @@ import java.util.Set;
  */
 public interface ExtracterSinkMapperService {
 
-    List<String> queryTableNames(String key);
+    void initCache() throws Exception;
 
-    Set<String> querySourceDBNames();
+    List<String> queryTableNames(String key) throws Exception;
+
+    Set<String> querySourceDBNames() throws Exception;
 
     List<ExtracterSinkMapper> queryList(QuerySchemaVO vo);
 
