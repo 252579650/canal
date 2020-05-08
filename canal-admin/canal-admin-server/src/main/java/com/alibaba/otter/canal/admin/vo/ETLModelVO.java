@@ -106,17 +106,35 @@ public class ETLModelVO implements Serializable {
         /**
          * 字段值表达式
          */
-        @ApiModelProperty("表达规则")
-        private String fieldVauleExp;
+        /**
+         * 新增字段值表达式
+         */
+        @ApiModelProperty("新增")
+        private String insertFieldVaule;
 
         /**
          * 类型;0/原值;1/表达式
          */
         @ApiModelProperty("类型;0/原值;1/表达式;2/默认值  *")
-        private String type;
+        private String insertFieldType;
 
-        @ApiModelProperty("默认值")
-        private String defaultValue;
+        /**
+         * 类型;0/原值;1/表达式
+         */
+        @ApiModelProperty("类型;0/原值;1/表达式;2/默认值  *")
+        private String updateFieldType;
+
+        /**
+         * 新增字段值表达式
+         */
+        @ApiModelProperty("更新值")
+        private String updateFieldVaule;
+
+        /**
+         * 校验规则
+         */
+        @ApiModelProperty("校验规则")
+        private String checkRule;
 
         /**
          * 是否推送;0/否;1/是

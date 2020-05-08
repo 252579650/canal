@@ -1,10 +1,8 @@
 package com.alibaba.otter.canal.admin.controller;
 
-import com.alibaba.otter.canal.admin.model.BaseModel;
-import com.alibaba.otter.canal.admin.model.CanalConsumer;
-import com.alibaba.otter.canal.admin.model.ExtracterTask;
-import com.alibaba.otter.canal.admin.model.Pager;
+import com.alibaba.otter.canal.admin.model.*;
 import com.alibaba.otter.canal.admin.service.CanalConsumerService;
+import com.alibaba.otter.canal.admin.service.CanalConsumerTopicService;
 import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
 import com.alibaba.otter.canal.admin.service.ExtracterTaskService;
 import com.alibaba.otter.canal.admin.vo.ETLModelVO;
@@ -25,6 +23,9 @@ public class SumscopeController {
 
     @Autowired
     private CanalConsumerService canalConsumerService;
+
+    @Autowired
+    private CanalConsumerTopicService canalConsumerTopicService;
 
     @Autowired
     private ExtracterTaskService extracterTaskService;
@@ -124,5 +125,33 @@ public class SumscopeController {
     @ApiOperation(value = "查询消费者列表")
     public BaseModel<Pager<CanalConsumer>> queryConsumerList(String search, Pager<CanalConsumer> pager) {
         return BaseModel.getInstance(canalConsumerService.list(search, pager));
+    }
+
+    @PostMapping(value = "/insertConsumerTopic")
+    @ApiOperation(value = "新增消费者Topic")
+    public BaseModel<String> insertConsumerTopic(@RequestBody ExtracterConsumerTopic extracterConsumerTopic) {
+        canalConsumerTopicService.insert(extracterConsumerTopic);
+        return BaseModel.getInstance("success");
+    }
+
+    @PostMapping(value = "/updateConsumerTopic")
+    @ApiOperation(value = "更新消费者Topic")
+    public BaseModel<String> updateConsumerTopic(@RequestBody ExtracterConsumerTopic extracterConsumerTopic) {
+        canalConsumerTopicService.update(extracterConsumerTopic);
+        return BaseModel.getInstance("success");
+    }
+
+
+    @DeleteMapping(value = "/deleteConsumerTopic/{id}")
+    @ApiOperation(value = "删除消费者Topic")
+    public BaseModel<String> deleteConsumerTopic(@PathVariable Long id) {
+        canalConsumerTopicService.delete(id);
+        return BaseModel.getInstance("success");
+    }
+
+    @GetMapping(value = "/queryConsumerTopicList")
+    @ApiOperation(value = "查询消费者Topic列表")
+    public BaseModel<Pager<ExtracterConsumerTopic>> queryConsumerTopicList(String search, Pager<ExtracterConsumerTopic> pager) {
+        return BaseModel.getInstance(canalConsumerTopicService.list(search, pager));
     }
 }
