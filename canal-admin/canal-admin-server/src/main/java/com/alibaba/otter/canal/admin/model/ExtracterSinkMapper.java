@@ -45,7 +45,7 @@ public class ExtracterSinkMapper extends Model {
     private Integer id;
 
     /**
-     * 目标ID
+     * 目标id
      */
     private Integer destinationId;
 
@@ -54,16 +54,30 @@ public class ExtracterSinkMapper extends Model {
      */
     private String fieldName;
 
-    private String defaultValue;
     /**
-     * 字段值表达式
+     * 新增字段值表达式
      */
-    private String fieldVauleExp;
+    private String insertFieldVaule;
 
     /**
      * 类型;0/原值;1/表达式
      */
-    private String type;
+    private String insertFieldType;
+
+    /**
+     * 类型;0/原值;1/表达式
+     */
+    private String updateFieldType;
+
+    /**
+     * 新增字段值表达式
+     */
+    private String updateFieldVaule;
+
+    /**
+     * 校验规则
+     */
+    private String checkRule;
 
     /**
      * 是否推送;0/否;1/是

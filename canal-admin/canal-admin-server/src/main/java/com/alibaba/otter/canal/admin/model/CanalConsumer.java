@@ -14,7 +14,7 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@Table(name = "canal_consumer")
+@Table(name = "extracter_consumer")
 @Entity
 public class CanalConsumer extends Model {
 

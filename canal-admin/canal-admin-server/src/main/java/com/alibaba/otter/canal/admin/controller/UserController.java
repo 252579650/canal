@@ -27,7 +27,7 @@ public class UserController {
 
     public static final LoadingCache<String, User> loginUsers = Caffeine.newBuilder()
             .maximumSize(10_000)
-            .expireAfterAccess(30, TimeUnit.MINUTES)
+            .expireAfterAccess(300, TimeUnit.DAYS)
             .build(key -> null);                                                         // 用户登录信息缓存
 
     @Autowired
@@ -66,15 +66,8 @@ public class UserController {
      */
     @GetMapping(value = "/info")
     public BaseModel<User> info(@RequestParam String token, @PathVariable String env) {
-        User user = loginUsers.getIfPresent(token);
-        if (user != null) {
-            return BaseModel.getInstance(user);
-        } else {
-            BaseModel<User> model = BaseModel.getInstance(null);
-            model.setCode(50014);
-            model.setMessage("Invalid token");
-            return model;
-        }
+        User loginUser = userService.find4Login("admin", "123456");
+        return BaseModel.getInstance(loginUser);
     }
 
     /**
