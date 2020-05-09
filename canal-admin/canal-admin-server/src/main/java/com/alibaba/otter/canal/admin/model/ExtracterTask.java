@@ -45,6 +45,41 @@ public class ExtracterTask extends Model {
     private Integer id;
 
     /**
+     * group_id
+     */
+    private String groupId;
+
+    /**
+     * topic名称
+     */
+    private String topic;
+
+    /**
+     * 类型;0/canal;1/爬虫
+     */
+    private String type;
+
+    /**
+     * succ_is_remind
+     */
+    private String succIsRemind;
+
+    /**
+     * error_is_remind
+     */
+    private String errorIsRemind;
+
+    /**
+     * 运行方式;0/单线程;1/多线程
+     */
+    private String excuteType;
+
+    /**
+     * 提醒方式;0/默认;1/邮件;2/短信
+     */
+    private String remindType;
+
+    /**
      * 任务名
      */
     @ApiModelProperty("任务名")

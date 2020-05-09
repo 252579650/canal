@@ -255,6 +255,12 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
         vo.setSourceDbName(extracterTask.getSourceDatabase());
         vo.setSourceTableName(extracterTask.getSourceTable());
         vo.setState(extracterTask.getState());
+        vo.setErrorIsRemind(extracterTask.getErrorIsRemind());
+        vo.setTopic(extracterTask.getTopic());
+        vo.setExcuteType(extracterTask.getExcuteType());
+        vo.setRemindType(extracterTask.getRemindType());
+        vo.setSuccIsRemind(extracterTask.getSuccIsRemind());
+        vo.setType(extracterTask.getType());
 
         List<ExtracterTaskSink> extracterTaskSinks = ExtracterTaskSink.find.query().where().eq("task_id", id).findList();
         if (!CollectionUtils.isEmpty(extracterTaskSinks)) {
@@ -323,6 +329,13 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             extracterTask.setDescription(model.getDescription());
             extracterTask.setCreateTime(LocalDateTime.now());
             extracterTask.setUpdateTime(LocalDateTime.now());
+            extracterTask.setErrorIsRemind(model.getErrorIsRemind());
+            extracterTask.setTopic(model.getTopic());
+            extracterTask.setExcuteType("1");
+            extracterTask.setRemindType("1");
+            extracterTask.setSuccIsRemind(model.getSuccIsRemind());
+            extracterTask.setType(model.getType());
+            extracterTask.setGroupId(UUID.randomUUID().toString().replaceAll("-", ""));
             extracterTask.save();
 
             List<ETLModelVO.SinkModel> sinkModels = model.getSinkModels();

@@ -126,32 +126,4 @@ public class SumscopeController {
     public BaseModel<Pager<CanalConsumer>> queryConsumerList(String search, Pager<CanalConsumer> pager) {
         return BaseModel.getInstance(canalConsumerService.list(search, pager));
     }
-
-    @PostMapping(value = "/insertConsumerTopic")
-    @ApiOperation(value = "新增消费者Topic")
-    public BaseModel<String> insertConsumerTopic(@RequestBody ExtracterConsumerTopic extracterConsumerTopic) {
-        canalConsumerTopicService.insert(extracterConsumerTopic);
-        return BaseModel.getInstance("success");
-    }
-
-    @PostMapping(value = "/updateConsumerTopic")
-    @ApiOperation(value = "更新消费者Topic")
-    public BaseModel<String> updateConsumerTopic(@RequestBody ExtracterConsumerTopic extracterConsumerTopic) {
-        canalConsumerTopicService.update(extracterConsumerTopic);
-        return BaseModel.getInstance("success");
-    }
-
-
-    @DeleteMapping(value = "/deleteConsumerTopic/{id}")
-    @ApiOperation(value = "删除消费者Topic")
-    public BaseModel<String> deleteConsumerTopic(@PathVariable Long id) {
-        canalConsumerTopicService.delete(id);
-        return BaseModel.getInstance("success");
-    }
-
-    @GetMapping(value = "/queryConsumerTopicList")
-    @ApiOperation(value = "查询消费者Topic列表")
-    public BaseModel<Pager<ExtracterConsumerTopic>> queryConsumerTopicList(String search, Pager<ExtracterConsumerTopic> pager) {
-        return BaseModel.getInstance(canalConsumerTopicService.list(search, pager));
-    }
 }

@@ -12,6 +12,35 @@ public class ETLModelVO implements Serializable {
 
     private Integer id;
 
+    @ApiModelProperty("topic名称")
+    private String topic;
+
+    /**
+     * 类型;0/canal;1/爬虫
+     */
+    @ApiModelProperty("类型;0/canal;1/爬虫")
+    private String type;
+
+    /**
+     * succ_is_remind
+     */
+    @ApiModelProperty("成功是否提醒;0/否;1/是")
+    private String succIsRemind;
+
+    @ApiModelProperty("运行方式;0/单线程;1/多线程")
+    private String excuteType;
+
+    /**
+     * 提醒方式;0/默认;1/邮件;2/短信
+     */
+    @ApiModelProperty("提醒方式;0/默认;1/邮件;2/短信")
+    private String remindType;
+    /**
+     * error_is_remind
+     */
+    @ApiModelProperty("错误是否提醒;0/否;1/是")
+    private String errorIsRemind;
+
     @ApiModelProperty("模型名称 *")
     private String name;
 
