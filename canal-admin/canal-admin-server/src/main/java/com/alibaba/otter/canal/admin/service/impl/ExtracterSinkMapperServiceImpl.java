@@ -15,6 +15,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -313,12 +314,13 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
     @Override
     public void init(ETLModelVO model) {
         try {
-            ExtracterTask extracterTask = ExtracterTask.find.query().where().eq("source_database", model.getSourceDbName()).and().eq("source_table", model.getSourceTableName()).findOne();
-            if (extracterTask != null) {
-                throw new ServiceException(model.getSourceDbName() + ":" + model.getSourceTableName() + "已存在相关配置");
+            if ("0".equalsIgnoreCase(model.getType())) {
+                if (ExtracterTask.find.query().where().eq("source_database", model.getSourceDbName()).and().eq("source_table", model.getSourceTableName()).findOne() != null) {
+                    throw new ServiceException(model.getSourceDbName() + ":" + model.getSourceTableName() + "已存在相关配置");
+                }
             }
             //保存计划信息
-            extracterTask = new ExtracterTask();
+            ExtracterTask extracterTask = new ExtracterTask();
             extracterTask.setId(model.getId());
             extracterTask.setName(model.getName());
             extracterTask.setExcuteResult("0");
