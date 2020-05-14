@@ -391,9 +391,10 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                                     }
 
                                     if (extracterSinkMapper.getUpdateFieldType().equalsIgnoreCase("3")) {
-                                        extracterSinkMapper.setUpdateFieldType(null);
+                                        extracterSinkMapper.setUpdateFieldVaule(null);
                                     }
 
+                                    extracterSinkMapper.setPushFlag("1");
                                     extracterSinkMapper.setDestinationId(extracterSinkDestination.getId());
                                     extracterSinkMapper.setCreateTime(LocalDateTime.now());
                                     extracterSinkMapper.setUpdateTime(LocalDateTime.now());
