@@ -19,6 +19,8 @@ import java.util.Set;
  */
 public interface ExtracterSinkMapperService {
 
+    void clearCache();
+
     void initCache() throws Exception;
 
     List<String> queryTableNames(String key) throws Exception;

@@ -30,6 +30,10 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
     private Map<String, List<String>> cache = Maps.newHashMap();
 
+    public void clearCache() {
+        cache.clear();
+    }
+
     public void initCache() throws Exception {
         List<CanalInstanceConfig> canalInstanceConfigs = CanalInstanceConfig.find.all();
         if (CollectionUtils.isEmpty(canalInstanceConfigs)) {

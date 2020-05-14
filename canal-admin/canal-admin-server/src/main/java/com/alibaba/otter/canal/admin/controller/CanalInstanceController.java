@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.otter.canal.admin.common.TemplateConfigLoader;
+import com.alibaba.otter.canal.admin.service.ExtracterSinkMapperService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,11 +34,14 @@ public class CanalInstanceController {
     @Autowired
     CanalInstanceService canalInstanceConfigService;
 
+    @Autowired
+    ExtracterSinkMapperService extracterSinkMapperService;
+
     /**
      * 实例配置列表
      *
      * @param canalInstanceConfig 查询对象
-     * @param env 环境变量
+     * @param env                 环境变量
      * @return 实例列表
      */
     @GetMapping(value = "/instances")
@@ -50,19 +54,20 @@ public class CanalInstanceController {
      * 保存实例配置
      *
      * @param canalInstanceConfig 实例配置对象
-     * @param env 环境变量
+     * @param env                 环境变量
      * @return 是否成功
      */
     @PostMapping(value = "/instance")
     public BaseModel<String> save(@RequestBody CanalInstanceConfig canalInstanceConfig, @PathVariable String env) {
         canalInstanceConfigService.save(canalInstanceConfig);
+        extracterSinkMapperService.clearCache();
         return BaseModel.getInstance("success");
     }
 
     /**
      * 实例详情信息
      *
-     * @param id 实例配置id
+     * @param id  实例配置id
      * @param env 环境变量
      * @return 实例信息
      */
@@ -74,7 +79,7 @@ public class CanalInstanceController {
     /**
      * 实例详情信息
      *
-     * @param id 实例配置id
+     * @param id  实例配置id
      * @param env 环境变量
      * @return 实例信息
      */
@@ -87,11 +92,12 @@ public class CanalInstanceController {
      * 修改实例配置
      *
      * @param canalInstanceConfig 实例配置信息
-     * @param env 环境变量
+     * @param env                 环境变量
      * @return 是否成功
      */
     @PutMapping(value = "/instance")
     public BaseModel<String> update(@RequestBody CanalInstanceConfig canalInstanceConfig, @PathVariable String env) {
+        extracterSinkMapperService.clearCache();
         canalInstanceConfigService.updateContent(canalInstanceConfig);
         return BaseModel.getInstance("success");
     }
@@ -99,12 +105,13 @@ public class CanalInstanceController {
     /**
      * 删除实例配置
      *
-     * @param id 实例配置id
+     * @param id  实例配置id
      * @param env 环境变量
      * @return 是否成功
      */
     @DeleteMapping(value = "/instance/{id}")
     public BaseModel<String> delete(@PathVariable Long id, @PathVariable String env) {
+        extracterSinkMapperService.clearCache();
         canalInstanceConfigService.delete(id);
         return BaseModel.getInstance("success");
     }
@@ -112,7 +119,7 @@ public class CanalInstanceController {
     /**
      * 启动远程实例
      *
-     * @param id 实例配置id
+     * @param id  实例配置id
      * @param env 环境变量
      * @return 是否成功
      */
@@ -124,9 +131,9 @@ public class CanalInstanceController {
     /**
      * 关闭远程实例
      *
-     * @param id 实例配置id
+     * @param id     实例配置id
      * @param nodeId 节点id
-     * @param env 环境变量
+     * @param env    环境变量
      * @return 是否成功
      */
     @PutMapping(value = "/instance/stop/{id}/{nodeId}")
@@ -137,9 +144,9 @@ public class CanalInstanceController {
     /**
      * 通过操作instance状态启动/停止远程instance
      *
-     * @param id 实例配置id
+     * @param id     实例配置id
      * @param option 操作类型: start/stop
-     * @param env 环境变量
+     * @param env    环境变量
      * @return 是否成功
      */
     @PutMapping(value = "/instance/status/{id}")
@@ -151,9 +158,9 @@ public class CanalInstanceController {
     /**
      * 获取远程实例运行日志
      *
-     * @param id 实例配置id
+     * @param id     实例配置id
      * @param nodeId 节点id
-     * @param env 环境变量
+     * @param env    环境变量
      * @return 实例日志信息
      */
     @GetMapping(value = "/instance/log/{id}/{nodeId}")
@@ -166,7 +173,7 @@ public class CanalInstanceController {
      * 通过Server id获取所有活动的Instance
      *
      * @param serverId 节点id
-     * @param env 环境变量
+     * @param env      环境变量
      * @return 实例列表
      */
     @GetMapping(value = "/active/instances/{serverId}")
