@@ -142,9 +142,9 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
                         TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
                         tableRowInfoVO.setCheckRule(extracterSinkMapper.getCheckRule());
-                        tableRowInfoVO.setInsertFieldType(extracterSinkMapper.getInsertFieldType() != null ? extracterSinkMapper.getInsertFieldType() : "0");
+                        tableRowInfoVO.setInsertFieldType(extracterSinkMapper.getInsertFieldType() != null ? extracterSinkMapper.getInsertFieldType() : "3");
                         tableRowInfoVO.setInsertFieldVaule(extracterSinkMapper.getInsertFieldVaule());
-                        tableRowInfoVO.setUpdateFieldType(extracterSinkMapper.getUpdateFieldType() != null ? extracterSinkMapper.getUpdateFieldType() : "0");
+                        tableRowInfoVO.setUpdateFieldType(extracterSinkMapper.getUpdateFieldType() != null ? extracterSinkMapper.getUpdateFieldType() : "3");
                         tableRowInfoVO.setUpdateFieldVaule(extracterSinkMapper.getUpdateFieldVaule());
                         tableRowInfoVO.setFieldComment(map.get("field_name") != null ? map.get("field_name").toString() : null);
                         tableRowInfoVO.setFieldName(map.get("field_code").toString());
@@ -176,9 +176,9 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
 
                 TableRowInfoVO tableRowInfoVO = new TableRowInfoVO();
                 tableRowInfoVO.setCheckRule(extracterSinkMapper.getCheckRule());
-                tableRowInfoVO.setInsertFieldType(extracterSinkMapper.getInsertFieldType() != null ? extracterSinkMapper.getInsertFieldType() : "0");
+                tableRowInfoVO.setInsertFieldType(extracterSinkMapper.getInsertFieldType() != null ? extracterSinkMapper.getInsertFieldType() : "3");
                 tableRowInfoVO.setInsertFieldVaule(extracterSinkMapper.getInsertFieldVaule());
-                tableRowInfoVO.setUpdateFieldType(extracterSinkMapper.getUpdateFieldType() != null ? extracterSinkMapper.getUpdateFieldType() : "0");
+                tableRowInfoVO.setUpdateFieldType(extracterSinkMapper.getUpdateFieldType() != null ? extracterSinkMapper.getUpdateFieldType() : "3");
                 tableRowInfoVO.setUpdateFieldVaule(extracterSinkMapper.getUpdateFieldVaule());
                 tableRowInfoVO.setFieldComment(map.get("COLUMN_COMMENT") != null ? map.get("COLUMN_COMMENT").toString() : null);
                 tableRowInfoVO.setFieldName(map.get("COLUMN_NAME").toString());
@@ -386,6 +386,14 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
                                 modelMappers.stream().forEach(mm -> {
                                     ExtracterSinkMapper extracterSinkMapper = new ExtracterSinkMapper();
                                     BeanUtils.copyProperties(mm, extracterSinkMapper);
+                                    if (extracterSinkMapper.getInsertFieldType().equalsIgnoreCase("3")) {
+                                        extracterSinkMapper.setInsertFieldVaule(null);
+                                    }
+
+                                    if (extracterSinkMapper.getUpdateFieldType().equalsIgnoreCase("3")) {
+                                        extracterSinkMapper.setUpdateFieldType(null);
+                                    }
+
                                     extracterSinkMapper.setDestinationId(extracterSinkDestination.getId());
                                     extracterSinkMapper.setCreateTime(LocalDateTime.now());
                                     extracterSinkMapper.setUpdateTime(LocalDateTime.now());
