@@ -347,12 +347,8 @@ public class ExtracterSinkMapperServiceImpl implements ExtracterSinkMapperServic
             List<ETLModelVO.SinkModel> sinkModels = model.getSinkModels();
             if (!CollectionUtils.isEmpty(sinkModels)) {
                 for (ETLModelVO.SinkModel sink : sinkModels) {
-                    ExtracterSink extracterSink = ExtracterSink.find.query().where().eq("ip", sink.getIp()).eq("port", sink.getPort()).eq("sinkOrigin", sink.getSinkOrigin()).findOne();
-                    if (extracterSink != null) {
-                        throw new RuntimeException("该SINK已存在");
-                    }
-                    //保存sink信息
-                    extracterSink = new ExtracterSink();
+                    //保存sink信息z
+                    ExtracterSink extracterSink = new ExtracterSink();
                     extracterSink.setIp(sink.getIp());
                     extracterSink.setPort(sink.getPort());
                     extracterSink.setSinkOrigin(sink.getSinkOrigin());
